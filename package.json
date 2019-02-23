@@ -1,0 +1,32 @@
+{
+  "name": "tgc-server",
+  "version": "1.0.0",
+  "description": "Backend for The Gilded Circle.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx parcel build src/index.js --target node",
+    "start": "node dist/index.js",
+    "lazy": "npm run build && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thegildedcircle/tgc-server.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thegildedcircle/tgc-server/issues"
+  },
+  "homepage": "https://github.com/thegildedcircle/tgc-server#readme",
+  "devDependencies": {
+    "elm": "^0.19.0-bugfix6",
+    "elm-hot": "^1.0.1",
+    "node-elm-compiler": "^5.0.1",
+    "parcel-bundler": "^1.11.0"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "lowdb": "^1.0.0",
+    "ws": "^6.1.4"
+  }
+}
