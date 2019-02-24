@@ -17,7 +17,7 @@ const clients = {}
 
 socket.on('connection', ws => {
   ws.on('message', payload => {
-  
+    console.log(payload)
   })
 
   ws.on('close', () => {
