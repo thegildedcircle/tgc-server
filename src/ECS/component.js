@@ -31,10 +31,12 @@ export const Component = {
   /** 
    * 
    */
-  Equippable: () => ({
+  Equippable: (slot) => ({
     name: 'equippable',
     unique: true,
-    state: true
+    state: {
+      slot
+    }
   }),
   /**
    * 
@@ -46,4 +48,12 @@ export const Component = {
       health
     }
   }),
+  /**
+   * 
+   */
+  Attacking: (target) => ({
+    name: 'attacking',
+    unique: false,
+    state: target
+  })
 }

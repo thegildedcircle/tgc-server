@@ -2,6 +2,7 @@ import { Entity } from './entity'
 import { Component } from './component'
 import { System } from './system'
 
+import { EntityList } from './utils'
 
 export default {
   Entity,
@@ -10,27 +11,22 @@ export default {
   Manager: class Manager {
     constructor () {
       this.entityCount = 0
-      this.entities = []
+      this.entities = new EntityList()
       this.systems = []
+
+      return this
     }
 
-    addEntity (base = '') {
-      const id = 
-        (+new Date()).toString(16) + 
-        (Math.random() * 100000000 | 0).toString(16) +
-        this.entityCount++
-      const entity = new Entity(id).addComponent(Component.Name('andy'))
+    addEntity (components = []) {
+      this.entities.push(components.reduce((e, c) => e.addComponent(c), new Entity()))
 
-      switch (base) {
-        default:
-          this.entities.push(entity)
-      }
-
-      return entity
+      return this
     }
 
     removeEntity (id) {
       this.entities = this.entities.filter(e => e.id !== id)
+
+      return this
     }
 
     getEntities () {
@@ -39,10 +35,14 @@ export default {
 
     addSystem (system) {
       this.systems.push(system)
+      
+      return this
     }
 
     runSystems () {
       this.entities = this.systems.reduce((e, s) => (e = s(e)), this.entities)
+
+      return this
     }
   }
 }

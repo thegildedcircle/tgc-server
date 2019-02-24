@@ -1,5 +1,5 @@
 export class Entity {
-  constructor (id, components = []) {
+  constructor (id = '', components = []) {
     this.id = id
     this.components = components
   }
@@ -25,7 +25,7 @@ export class Entity {
     return this.components.some(c => c.name === componentName)
   }
 
-  getComponent (componentName) {
+  getComponents (componentName) {
     return this.components.filter(c => c.name === componentName)
       .map(c => c.state)
   }

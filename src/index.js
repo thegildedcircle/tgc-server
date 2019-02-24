@@ -26,21 +26,24 @@ socket.on('connection', ws => {
 })
 
 import ECS from './ECS'
+const man = new ECS.Manager()
+man
+  .addEntity([
+    ECS.Component.Name('andy'),
+    ECS.Component.Attributes(),
+    ECS.Component.Level(),
+  ])
+  .addEntity([
+    ECS.Component.Name('alex'),
+    ECS.Component.Attributes(),
+    ECS.Component.Level(),
+    ECS.Component.Attacking(
+      man.getEntities()
+        .find(e => e.getComponents('name')[0] === 'andy')
+        .id
+    )
+  ])
+  .addSystem(ECS.System.attack)
+  .runSystems()
 
-const andy = new ECS.Entity('E+Andy', [])
-  .addComponent(ECS.Component.Attributes())
-  .addComponent(ECS.Component.Level(10, 100))
-  .addComponent(ECS.Component.Name('andy'))
-
-const alex = new ECS.Entity('E+Alex', [])
-  .addComponent(ECS.Component.Attributes())
-  .addComponent(ECS.Component.Level(10, 100))
-  .addComponent(ECS.Component.Name('alex'))
-
-const noGreet = new ECS.Entity('E+NoGreet', [])
-  .addComponent(ECS.Component.Attributes())
-  .addComponent(ECS.Component.Level(10, 100))
-
-const entites = [ andy, noGreet, alex ]
-
-ECS.System.greet(entites)
+console.dir(man, { depth: null })
