@@ -1,4 +1,3 @@
-import { Elm } from './Engine.elm'
 import express from 'express'
 import lowdb from 'lowdb'
 import { Server as WebSocket } from 'ws'
@@ -18,37 +17,30 @@ const clients = {}
 
 socket.on('connection', ws => {
   ws.on('message', payload => {
-    payload = JSON.parse(payload)
-
-    switch (payload.command) {
-      case 'login':
-        if (clients[payload.data.username]) {
-          ws.send(JSON.stringify({
-            message: `${payload.data.username} is already logged in.`
-          }), err => console.log(err))
-        } else {
-          clients[payload.data.username] = ws
-          ws.send(JSON.stringify({
-            message: `Logged in as ${payload.data.username}`
-          }), err => console.log(err))
-        }
-    }
+  
   })
 
   ws.on('close', () => {
-    console.log('Client disconnected')
+
   })
 })
 
+import ECS from './ECS'
 
+const andy = new ECS.Entity('E+Andy', [])
+  .addComponent(ECS.Component.Attributes())
+  .addComponent(ECS.Component.Level(10, 100))
+  .addComponent(ECS.Component.Name('andy'))
 
-// Elm Game Engine -------------------------------------------------------------
-const app = Elm.Engine.init({
+const alex = new ECS.Entity('E+Alex', [])
+  .addComponent(ECS.Component.Attributes())
+  .addComponent(ECS.Component.Level(10, 100))
+  .addComponent(ECS.Component.Name('alex'))
 
-})
+const noGreet = new ECS.Entity('E+NoGreet', [])
+  .addComponent(ECS.Component.Attributes())
+  .addComponent(ECS.Component.Level(10, 100))
 
-// Elm -> Js port subscriptions ------------------------------------------------
-app.ports.debugLog.subscribe(msg => {
-  console.dir(msg, { depth: null })
-})
+const entites = [ andy, noGreet, alex ]
 
+ECS.System.greet(entites)
