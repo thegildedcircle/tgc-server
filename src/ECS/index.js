@@ -1,54 +1,56 @@
-import { Entity } from './entity'
-import { Component } from './component'
-import { System } from './system'
+import { Entity } from "./entity";
+import { Component } from "./component";
+import { System } from "./system";
 
-import { EntityList } from './utils'
+import { EntityList } from "./utils";
 
 export default {
   Entity,
   Component,
   System,
   Manager: class Manager {
-    constructor () {
-      this.entityCount = 0
-      this.entities = new EntityList()
-      this.systems = []
+    constructor() {
+      this.entityCount = 0;
+      this.entities = new EntityList();
+      this.systems = [];
 
-      return this
+      return this;
     }
 
-    addEntity (components = []) {
-      this.entities.push(components.reduce((e, c) => e.addComponent(c), new Entity()))
+    addEntity(components = []) {
+      this.entities.push(
+        components.reduce((e, c) => e.addComponent(c), new Entity())
+      );
 
-      return this
+      return this;
     }
 
-    removeEntity (id) {
-      this.entities = this.entities.filter(e => e.id !== id)
+    removeEntity(id) {
+      this.entities = this.entities.filter(e => e.id !== id);
 
-      return this
+      return this;
     }
 
-    getEntities () {
-      return this.entities
+    getEntities() {
+      return this.entities;
     }
 
-    updateEntities (predicate, fn) {
-      this.entities = this.entities.filterMap(predicate, fn)
+    updateEntities(predicate, fn) {
+      this.entities = this.entities.filterMap(predicate, fn);
 
-      return this
+      return this;
     }
 
-    addSystem (system) {
-      this.systems.push(system)
-      
-      return this
+    addSystem(system) {
+      this.systems.push(system);
+
+      return this;
     }
 
-    runSystems () {
-      this.entities = this.systems.reduce((e, s) => (e = s(e)), this.entities)
+    runSystems() {
+      this.entities = this.systems.reduce((e, s) => (e = s(e)), this.entities);
 
-      return this
+      return this;
     }
   }
-}
+};
