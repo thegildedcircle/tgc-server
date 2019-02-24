@@ -20,28 +20,23 @@ export const System = {
 
       return e
     })
-
-    // return entities.map(e =>
-    //    e.hasComponent('attacking')
-    //     ? (e.getComponents('attacking').forEach(target => {
-    //         entities.map(t => t.id === target
-    //           ? (t.getComponents('attributes')[0].health -= e.getComponents('level')[0].level, t)
-    //           : t)
-    //       }), e)
-    //     : e
-    // )
   },
 
-  // checkDead: (entites) => {
-  //   // CHeck health = 0
-  //   // Stop things attacking it
-  //   // Stop attacking things
-  //   return entites.map(e => {
-  //     if (e.hasComponent('attributes') && e.getComponents('attributes')[0].health <= 0) {
-  //       const id = e.id
-
-  //       entites.map()
-  //     }
-  //   })
-  // }
+  checkDead: (entities) => {
+    // CHeck health = 0
+    // Stop things attacking it
+    // Stop attacking things
+    return entities.filterMap(e => {
+      return e.hasComponent('attributes') && e.getComponents('attributes')[0].health <= 0
+    }, e => {
+      const id = e.id
+      entities.filterMap(
+        e => {
+          return e.hasComponent('attacking')
+        },
+        e => e.removeComponents('attacking', c => c === id)
+      )
+      return e
+    })
+  }
 }
