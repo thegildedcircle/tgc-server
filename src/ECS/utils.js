@@ -1,7 +1,7 @@
 import shortid from "shortid";
 
 export class EntityList extends Array {
-  filterMap(predicate, fn) {
+  mapIf(predicate, fn) {
     return this.map(entity => (predicate(entity) ? fn(entity) : entity));
   }
 

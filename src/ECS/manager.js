@@ -29,7 +29,7 @@ export class Manager {
   }
 
   updateEntities(predicate, fn) {
-    this.entities = this.entities.filterMap(predicate, fn);
+    this.entities = this.entities.mapIf(predicate, fn);
 
     return this;
   }
