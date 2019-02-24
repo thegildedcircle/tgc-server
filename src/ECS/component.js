@@ -5,7 +5,7 @@ export const Component = {
   Name: (name = "") => ({
     name: "name",
     unique: true,
-    state: name
+    state: name,
   }),
   /** Entities have the Value component when they can be sold to a vendor or
    *  traded between players. The component describes how much gold the entity
@@ -14,7 +14,7 @@ export const Component = {
   Value: (value = 0) => ({
     name: "value",
     unique: true,
-    state: value
+    state: value,
   }),
   /** The Level component is for entities such as players and enemies that can
    *  earn experience, or otherwise have their functionality affected by their
@@ -25,18 +25,72 @@ export const Component = {
     unique: true,
     state: {
       level,
-      exp
-    }
+      exp,
+    },
   }),
   /**
    *
    */
-  Equippable: slot => ({
+  Equippable: (...slotOptions) => ({
     name: "equippable",
     unique: true,
     state: {
-      slot
-    }
+      slotOptions,
+    },
+  }),
+  /**
+   *
+   */
+  Inventory: (itemIDs = []) => ({
+    name: "inventory",
+    unique: true,
+    state: itemIDs,
+  }),
+  /**
+   *
+   */
+  Equipped: ({
+    head = null,
+    back = null,
+    torso = null,
+    legs = null,
+    hands = null,
+    feet = null,
+    mainhand = null,
+    offhand = null,
+    ring1 = null,
+    ring2 = null,
+  } = {}) => ({
+    name: "equipped",
+    unique: true,
+    state: {
+      head,
+      back,
+      torso,
+      legs,
+      hands,
+      feet,
+      mainhand,
+      offhand,
+      ring1,
+      ring2,
+    },
+  }),
+  /**
+   *
+   */
+  Damage: (value = 0) => ({
+    name: "damage",
+    unique: false,
+    state: value,
+  }),
+  /**
+   *
+   */
+  DamageModifier: (value = 0) => ({
+    name: "damageModifier",
+    unique: false,
+    state: value,
   }),
   /**
    *
@@ -45,15 +99,18 @@ export const Component = {
     name: "attributes",
     unique: true,
     state: {
-      health
-    }
+      health,
+    },
   }),
   /**
    *
    */
-  Attacking: target => ({
+  Attacking: (targetID, damage = 0) => ({
     name: "attacking",
     unique: false,
-    state: target
-  })
+    state: {
+      id: targetID,
+      damage,
+    },
+  }),
 };

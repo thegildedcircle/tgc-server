@@ -9,5 +9,5 @@ export default {
   Entity,
   Component,
   System,
-  Manager
+  Manager,
 };

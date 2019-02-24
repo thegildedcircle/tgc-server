@@ -11,11 +11,9 @@ export class Manager {
   }
 
   addEntity(components = []) {
-    this.entities.push(
-      components.reduce((e, c) => e.addComponent(c), new Entity())
-    );
+    const entity = this.entities.push(components.reduce((e, c) => e.addComponent(c), new Entity()));
 
-    return this;
+    return entity.id;
   }
 
   removeEntity(id) {

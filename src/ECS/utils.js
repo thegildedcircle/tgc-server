@@ -8,6 +8,6 @@ export class EntityList extends Array {
   push(entity) {
     super.push(entity.setID(shortid.generate()));
 
-    return this;
+    return entity;
   }
 }
