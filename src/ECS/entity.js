@@ -1,7 +1,12 @@
 export class Entity {
-  constructor (id = '', components = []) {
+  constructor () {
+    this.id = null
+    this.components = []
+  }
+  setID (id = '') {
     this.id = id
-    this.components = components
+
+    return this
   }
 
   addComponent (component) {
