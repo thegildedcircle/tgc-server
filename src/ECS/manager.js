@@ -1,3 +1,6 @@
+import { Entity } from "./entity";
+import { EntityList } from "./utils";
+
 export class Manager {
   constructor() {
     this.entityCount = 0;

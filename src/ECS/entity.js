@@ -3,6 +3,7 @@ export class Entity {
     this.id = null;
     this.components = [];
   }
+
   setID(id = "") {
     this.id = id;
 
@@ -25,7 +26,7 @@ export class Entity {
 
   removeComponents(componentName, predicate) {
     this.components = this.components.filter(
-      c => c.name !== componentName && !predicate(c.state)
+      c => !(c.name === componentName && predicate(c.state))
     );
 
     return this;

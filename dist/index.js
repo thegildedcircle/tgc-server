@@ -118,7 +118,7 @@ class Entity {
     this.components = [];
   }
 
-  setID(id = '') {
+  setID(id = "") {
     this.id = id;
     return this;
   }
@@ -155,8 +155,8 @@ const Component = {
   /** Simple name component, this allows things to be identified in the game
    *  world. Most things should have a name.
    */
-  Name: (name = '') => ({
-    name: 'name',
+  Name: (name = "") => ({
+    name: "name",
     unique: true,
     state: name
   }),
@@ -166,17 +166,17 @@ const Component = {
    *  is worth, before taking into account any modifiers.
    */
   Value: (value = 0) => ({
-    name: 'value',
+    name: "value",
     unique: true,
     state: value
   }),
 
   /** The Level component is for entities such as players and enemies that can
    *  earn experience, or otherwise have their functionality affected by their
-   *  level. 
+   *  level.
    */
   Level: (level = 1, exp = 0) => ({
-    name: 'level',
+    name: "level",
     unique: true,
     state: {
       level,
@@ -184,11 +184,11 @@ const Component = {
     }
   }),
 
-  /** 
-   * 
+  /**
+   *
    */
   Equippable: slot => ({
-    name: 'equippable',
+    name: "equippable",
     unique: true,
     state: {
       slot
@@ -196,10 +196,10 @@ const Component = {
   }),
 
   /**
-   * 
+   *
    */
   Attributes: (health = 100) => ({
-    name: 'attributes',
+    name: "attributes",
     unique: true,
     state: {
       health
@@ -207,10 +207,10 @@ const Component = {
   }),
 
   /**
-   * 
+   *
    */
   Attacking: target => ({
-    name: 'attacking',
+    name: "attacking",
     unique: false,
     state: target
   })
@@ -225,32 +225,30 @@ Object.defineProperty(exports, "__esModule", {
 exports.System = void 0;
 const System = {
   greet: entities => {
-    entities.filter(e => e.hasComponent('name')).forEach(e => console.log(`Hello ${e.getComponents('name')[0]}!`));
+    entities.filter(e => e.hasComponent("name")).forEach(e => console.log(`Hello ${e.getComponents("name")[0]}!`));
     return entities;
   },
   attack: entities => {
     // - For every entity that has an attacking component
     // - apply some damage to the target entities health attribute
-    return entities.filterMap(e => e.hasComponent('attacking'), e => {
-      e.getComponents('attacking').forEach(target => entities.filterMap(t => t.id === target, t => {
-        t.getComponents('attributes')[0].health -= e.getComponents('level')[0].level;
+    return entities.filterMap(e => e.hasComponent("attacking"), e => {
+      e.getComponents("attacking").forEach(target => entities.filterMap(t => t.id === target, t => {
+        t.getComponents("attributes")[0].health -= e.getComponents("level")[0].level;
         return t;
       }));
       return e;
     });
   },
   checkDead: entities => {
-    // CHeck health = 0
-    // Stop things attacking it
-    // Stop attacking things
     return entities.filterMap(e => {
-      return e.hasComponent('attributes') && e.getComponents('attributes')[0].health <= 0;
-    }, e => {
-      const id = e.id;
-      entities.filterMap(e => {
-        return e.hasComponent('attacking');
-      }, e => e.removeComponents('attacking', c => c === id));
-      return e;
+      // Check health = 0
+      return e.hasComponent("attributes") && e.getComponents("attributes")[0].health <= 0;
+    }, entity => {
+      // Stop things attack this
+      entities.filterMap(e => e.hasComponent("attacking"), e => e.removeComponents("attacking", c => c === entity.id)); // Stop this attacking things
+
+      entity.removeComponents("attacking", c => true);
+      return entity;
     });
   }
 };
@@ -280,7 +278,59 @@ class EntityList extends Array {
 }
 
 exports.EntityList = EntityList;
-},{}],"LTnQ":[function(require,module,exports) {
+},{}],"Kq7/":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Manager = void 0;
+
+var _entity = require("./entity");
+
+var _utils = require("./utils");
+
+class Manager {
+  constructor() {
+    this.entityCount = 0;
+    this.entities = new _utils.EntityList();
+    this.systems = [];
+    return this;
+  }
+
+  addEntity(components = []) {
+    this.entities.push(components.reduce((e, c) => e.addComponent(c), new _entity.Entity()));
+    return this;
+  }
+
+  removeEntity(id) {
+    this.entities = this.entities.filter(e => e.id !== id);
+    return this;
+  }
+
+  getEntities() {
+    return this.entities;
+  }
+
+  updateEntities(predicate, fn) {
+    this.entities = this.entities.filterMap(predicate, fn);
+    return this;
+  }
+
+  addSystem(system) {
+    this.systems.push(system);
+    return this;
+  }
+
+  runSystems() {
+    this.entities = this.systems.reduce((e, s) => e = s(e), this.entities);
+    return this;
+  }
+
+}
+
+exports.Manager = Manager;
+},{"./entity":"aezc","./utils":"es35"}],"LTnQ":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -294,53 +344,18 @@ var _component = require("./component");
 
 var _system = require("./system");
 
+var _manager = require("./manager");
+
 var _utils = require("./utils");
 
 var _default = {
   Entity: _entity.Entity,
   Component: _component.Component,
   System: _system.System,
-  Manager: class Manager {
-    constructor() {
-      this.entityCount = 0;
-      this.entities = new _utils.EntityList();
-      this.systems = [];
-      return this;
-    }
-
-    addEntity(components = []) {
-      this.entities.push(components.reduce((e, c) => e.addComponent(c), new _entity.Entity()));
-      return this;
-    }
-
-    removeEntity(id) {
-      this.entities = this.entities.filter(e => e.id !== id);
-      return this;
-    }
-
-    getEntities() {
-      return this.entities;
-    }
-
-    updateEntities(predicate, fn) {
-      this.entities = this.entities.filterMap(predicate, fn);
-      return this;
-    }
-
-    addSystem(system) {
-      this.systems.push(system);
-      return this;
-    }
-
-    runSystems() {
-      this.entities = this.systems.reduce((e, s) => e = s(e), this.entities);
-      return this;
-    }
-
-  }
+  Manager: _manager.Manager
 };
 exports.default = _default;
-},{"./entity":"aezc","./component":"tIyq","./system":"pkl2","./utils":"es35"}],"Focm":[function(require,module,exports) {
+},{"./entity":"aezc","./component":"tIyq","./system":"pkl2","./manager":"Kq7/","./utils":"es35"}],"Focm":[function(require,module,exports) {
 "use strict";
 
 var _express = _interopRequireDefault(require("express"));
@@ -362,14 +377,14 @@ const socket = new _ws.Server({
   server
 });
 const clients = {};
-socket.on('connection', ws => {
-  ws.on('message', payload => {
+socket.on("connection", ws => {
+  ws.on("message", payload => {
     console.log(payload);
   });
-  ws.on('close', () => {});
+  ws.on("close", () => {});
 });
 const man = new _ECS.default.Manager();
-man.addEntity([_ECS.default.Component.Name('andy'), _ECS.default.Component.Attributes(), _ECS.default.Component.Level()]).addEntity([_ECS.default.Component.Name('alex'), _ECS.default.Component.Attributes(150), _ECS.default.Component.Level(), _ECS.default.Component.Attacking(man.getEntities().find(e => e.getComponents('name')[0] === 'andy').id)]).updateEntities(e => e.hasComponent('name') && e.getComponents('name')[0] === 'andy', e => e.addComponent(_ECS.default.Component.Attacking(man.getEntities().find(e => e.getComponents('name')[0] === 'alex').id))).addSystem(_ECS.default.System.attack).addSystem(_ECS.default.System.checkDead);
+man.addEntity([_ECS.default.Component.Name("andy"), _ECS.default.Component.Attributes(), _ECS.default.Component.Level()]).addEntity([_ECS.default.Component.Name("alex"), _ECS.default.Component.Attributes(150), _ECS.default.Component.Level(), _ECS.default.Component.Attacking(man.getEntities().find(e => e.getComponents("name")[0] === "andy").id)]).updateEntities(e => e.hasComponent("name") && e.getComponents("name")[0] === "andy", e => e.addComponent(_ECS.default.Component.Attacking(man.getEntities().find(e => e.getComponents("name")[0] === "alex").id))).addSystem(_ECS.default.System.attack).addSystem(_ECS.default.System.checkDead);
 
 for (let i = 0; i <= 200; i++) {
   man.runSystems();
