@@ -35,7 +35,7 @@ man
   ])
   .addEntity([
     ECS.Component.Name('alex'),
-    ECS.Component.Attributes(),
+    ECS.Component.Attributes(150),
     ECS.Component.Level(),
     ECS.Component.Attacking(
       man.getEntities()
@@ -43,7 +43,19 @@ man
         .id
     )
   ])
+  .updateEntities(
+    e => e.hasComponent('name') && e.getComponents('name')[0] === 'andy',
+    e => e.addComponent(ECS.Component.Attacking(
+      man.getEntities()
+        .find(e => e.getComponents('name')[0] === 'alex')
+        .id
+    ))
+  )
   .addSystem(ECS.System.attack)
-  .runSystems()
+  .addSystem(ECS.System.checkDead)
+
+for (let i = 0; i <= 200; i++) {
+  man.runSystems();
+}
 
 console.dir(man, { depth: null })

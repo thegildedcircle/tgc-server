@@ -23,19 +23,20 @@ export const System = {
   },
 
   checkDead: (entities) => {
-    // CHeck health = 0
-    // Stop things attacking it
-    // Stop attacking things
     return entities.filterMap(e => {
+      // Check health = 0
       return e.hasComponent('attributes') && e.getComponents('attributes')[0].health <= 0
-    }, e => {
-      const id = e.id
+    }, entity => {
+      // Stop things attack this
       entities.filterMap(
         e => {
           return e.hasComponent('attacking')
         },
-        e => e.removeComponents('attacking', c => c === id)
+        e => e.removeComponents('attacking', c => c === entity.id)
       )
+      // Stop this attacking things
+      e.removeComponents('attacking', c => true)
+
       return e
     })
   }

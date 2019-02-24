@@ -33,6 +33,12 @@ export default {
       return this.entities
     }
 
+    updateEntities (predicate, fn) {
+      this.entities = this.entities.filterMap(predicate, fn)
+
+      return this
+    }
+
     addSystem (system) {
       this.systems.push(system)
       

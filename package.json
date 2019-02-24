@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx parcel build src/index.js --target node",
     "start": "node dist/index.js",
-    "lazy": "npm run build && npm start"
+    "dev": "npx parcel build src/index.js --target node --no-minify && npm start"
   },
   "repository": {
     "type": "git",

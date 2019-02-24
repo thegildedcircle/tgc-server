@@ -20,8 +20,8 @@ export class Entity {
     return this
   }
 
-  removeComponent (componentName) {
-    this.components = this.components.filter(c => c.name !== componentName)    
+  removeComponents (componentName, predicate) {
+    this.components = this.components.filter(c => c.name !== componentName && !predicate(c.state))    
 
     return this
   }
