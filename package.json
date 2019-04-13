@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx parcel build src/main.js --target node",
-    "build:dev": "npx parcel build src/main.js --target node -d .dev",
+    "build:dev": "npx parcel build src/main.js --target node -d .dev --no-minify",
     "start": "node dist/main.js",
     "dev": "npm run build:dev && node .dev/main.js"
   },
