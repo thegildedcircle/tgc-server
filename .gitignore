@@ -81,3 +81,7 @@ typings/
 
 # Elm build files
 elm-stuff/
+
+# Build files
+.dev/*
+dist/*
