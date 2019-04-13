@@ -71,15 +71,20 @@ const goblin = man.addEntity("humanoid", [
 ]);
 
 man.runSystem(
-  System((entities, state) => {
-    const player = entities.findIndex(e => e.id === state.attacker);
-    const goblin = entities.findIndex(e => e.id === state.defender);
+  System(
+    (entities, state) => {
+      const player = entities.findIndex(e => e.id === state.attacker);
+      const goblin = entities.findIndex(e => e.id === state.defender);
+      const weapon = entities.findIndex(
+        e => e.id === entities[player].getComponent("mainHand").state.equippedItem
+      );
 
-    const damage = entities[player].getComponent("baseDamage").state.value;
+      const damage = entities[weapon].getComponent("baseDamage").state.value;
 
-    entities[goblin].getComponent("health").state.value -= damage;
-  }),
-  { attacker: player, defender: goblin }
+      entities[goblin].getComponent("health").state.value -= damage;
+    },
+    { attacker: player, defender: goblin }
+  )
 );
 
 console.dir(man.entities.filter(e => e.id === player || e.id === goblin), { depth: null });
