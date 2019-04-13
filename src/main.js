@@ -2,6 +2,8 @@ import express from "express";
 import lowdb from "lowdb";
 import { Server as WebSocket } from "ws";
 
+import { Component, Entity, Manager, System } from "../../ecs/index.js";
+
 // Constants -------------------------------------------------------------------
 const PORT = process.env.PORT || 3000;
 
@@ -20,36 +22,64 @@ socket.on("connection", ws => {
   ws.on("close", () => {});
 });
 
-import ECS from "./ECS";
-const man = new ECS.Manager();
-man
-  .addEntity([
-    ECS.Component.Name("andy"),
-    ECS.Component.Attributes(),
-    ECS.Component.Level()
-  ])
-  .addEntity([
-    ECS.Component.Name("alex"),
-    ECS.Component.Attributes(150),
-    ECS.Component.Level(),
-    ECS.Component.Attacking(
-      man.getEntities().find(e => e.getComponents("name")[0] === "andy").id
-    )
-  ])
-  .updateEntities(
-    e => e.hasComponent("name") && e.getComponents("name")[0] === "andy",
-    e =>
-      e.addComponent(
-        ECS.Component.Attacking(
-          man.getEntities().find(e => e.getComponents("name")[0] === "alex").id
-        )
-      )
-  )
-  .addSystem(ECS.System.attack)
-  .addSystem(ECS.System.checkDead);
+const man = new Manager();
 
-for (let i = 0; i <= 200; i++) {
-  man.runSystems();
-}
+const baseDamageComponent = Component("baseDamage", true, { value: 0 });
+const baseArmourComponent = Component("baseArmour", true, { value: 0 });
+const weightComponent = Component("weight", false, { value: 0 });
+const criticalChanceComponent = Component("critical", false, { value: 0 });
 
-console.dir(man, { depth: null });
+const healthComponent = Component("health", true, { value: 0 });
+
+// Equipment components -- equippedItem will be the ID of the item entity
+const mainHandComponent = Component("mainHand", true, { equippedItem: "" });
+const offHandComponent = Component("offHand", true, { equippedItem: "" });
+const headComponent = Component("head", true, { equippedItem: "" });
+
+const playerSword = man.addEntity("", [
+  baseDamageComponent({ value: 5 }),
+  weightComponent({ value: 2 }),
+]);
+const playerHelmet = man.addEntity("", [
+  baseArmourComponent({ value: 2 }),
+  weightComponent({ value: 1 }),
+]);
+const goblinSword = man.addEntity("", [
+  baseDamageComponent({ value: 2 }),
+  weightComponent({ value: 2 }),
+  criticalChanceComponent({ value: 0.1 }),
+]);
+const goblinShield = man.addEntity("", [
+  baseArmourComponent({ value: 4 }),
+  weightComponent({ value: 2 }),
+]);
+
+man.registerEntityTemplate("humanoid", [
+  healthComponent({ value: 100 }),
+  mainHandComponent(),
+  offHandComponent(),
+  headComponent(),
+]);
+const player = man.addEntity("humanoid", [
+  mainHandComponent({ equippedItem: playerSword }),
+  headComponent({ equippedItem: playerHelmet }),
+]);
+const goblin = man.addEntity("humanoid", [
+  healthComponent({ value: 65 }),
+  mainHandComponent({ equippedItem: goblinSword }),
+  offHandComponent({ equippedItem: goblinShield }),
+]);
+
+man.runSystem(
+  System((entities, state) => {
+    const player = entities.findIndex(e => e.id === state.attacker);
+    const goblin = entities.findIndex(e => e.id === state.defender);
+
+    const damage = entities[player].getComponent("baseDamage").state.value;
+
+    entities[goblin].getComponent("health").state.value -= damage;
+  }),
+  { attacker: player, defender: goblin }
+);
+
+console.dir(man.entities.filter(e => e.id === player || e.id === goblin), { depth: null });
